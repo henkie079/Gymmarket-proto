@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymMarket — Interactief Prototype</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-light: #ccfbf1;
+      --accent: #ea580c;
+      --accent-light: #ffedd5;
+      --border: #e5e7eb;
+      --success: #15803d;
+      --success-light: #dcfce7;
+      --radius: 14px;
+      --shadow: 0 4px 16px rgba(17, 24, 39, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 48px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #0f766e 100%);
+      color: #fff;
+      padding: 20px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      background: rgba(255,255,255,0.16);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 0.88rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: #f9fafb; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.24); }
+
+    .container {
+      max-width: 1120px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-big {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .muted { color: var(--muted); font-size: 0.88rem; }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .pill-green { background: var(--success-light); color: var(--success); }
+    .pill-orange { background: var(--accent-light); color: var(--accent); }
+    .pill-teal { background: var(--primary-light); color: var(--primary-dark); }
+
+    .progress-bar-wrap {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--primary), #14b8a6);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
+
+    input[type="number"], input[type="text"], input[type="password"], select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .deal-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+
+    .deal-item.selected {
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+
+    .recipe-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .photo-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    .photo-preview {
+      max-height: 180px;
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+      object-fit: cover;
+    }
+
+    .api-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .api-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .attribution {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .attribution a { color: var(--primary-dark); font-weight: 600; text-decoration: none; }
+    .attribution a:hover { text-decoration: underline; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      z-index: 50;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <span>🏋️‍♂️🛒 GymMarket</span>
+        <span class="brand-badge">Prototype v0.2</span>
+      </div>
+      <div class="header-stats">
+        <span id="hdr-macros">Doel: 2.350 kcal · 175g eiwit</span>
+        <span id="hdr-savings" class="pill pill-green">Geschatte weekbesparing: €14,20</span>
+        <button class="btn btn-ghost" onclick="resetDemo()">↻ Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+      <button class="tab" data-tab="workout" onclick="switchTab('workout')">🏋️‍♂️ Workout Log</button>
+      <button class="tab" data-tab="transform" onclick="switchTab('transform')">📸 Transformatie & Check-in</button>
+      <button class="tab" data-tab="deals" onclick="switchTab('deals')">🛒 Folders, Recepten & Lijst</button>
+    </div>
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-panel">
+      <div class="grid-3" style="margin-bottom: 18px;">
+        <div class="card">
+          <div class="muted">Huidig Lichaamsgewicht</div>
+          <div class="kpi-big" id="dash-weight">81.2 kg</div>
+          <div class="muted" id="dash-weight-delta">Vorige week: 81.8 kg (-0.6 kg)</div>
+        </div>
+        <div class="card">
+          <div class="muted">Bench Press Doel (Volgende Push Day)</div>
+          <div class="kpi-big" id="dash-bench">82.5 kg</div>
+          <div class="muted" id="dash-bench-sub">3 sets × 8 reps (Progressive Overload)</div>
+        </div>
+        <div class="card">
+          <div class="muted">Actieve Folderdeals Geselecteerd</div>
+          <div class="kpi-big" id="dash-deals-count">5 deals</div>
+          <div class="muted">Koppeling met dagelijkse eiwitdoelen actief</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📈 Bench Press Progressie (kg)</span>
+            <span class="pill pill-teal">Automatisch schema</span>
+          </div>
+          <svg id="bench-chart" viewBox="0 0 420 180" style="width: 100%; height: auto;"></svg>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>🎯 Doelvoortgang: Lean Bulk / Sportlichaam</span>
+            <span class="pill pill-orange" id="goal-pct-badge">68%</span>
+          </div>
+          <p class="muted">Gecombineerde score op basis van trainingsconsistentie, wekelijkse check-ins en eiwitdoel-dekking.</p>
+          <div class="progress-bar-wrap" style="height: 14px; margin: 14px 0;">
+            <div class="progress-bar-fill" id="goal-progress-bar" style="width: 68%;"></div>
+          </div>
+          <div id="dash-recipes-preview" style="margin-top: 12px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: WORKOUT LOG -->
+    <section id="tab-workout" class="tab-panel hidden">
+      <div class="card">
+        <div class="card-title">
+          <span>Push Day — Progressive Overload Logger</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="fillTargetReps()">⚡ Vul doel-reps in</button>
+            <button class="btn btn-primary" onclick="completeWorkout()">✓ Rond training af & bereken schema</button>
+          </div>
+        </div>
+        <p class="muted">Haal je de bovengrens van het herhalingsbereik op alle sets? Dan verhoogt GymMarket het gewicht automatisch voor je volgende sessie.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Oefening</th>
+              <th>Doel</th>
+              <th>Set 1 (reps)</th>
+              <th>Set 2 (reps)</th>
+              <th>Set 3 (reps)</th>
+              <th>Nieuw Schema</th>
+            </tr>
+          </thead>
+          <tbody id="workout-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: TRANSFORMATIE & CHECK-IN -->
+    <section id="tab-transform" class="tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span>⚖️ Wekelijkse Check-in</span></div>
+          <div style="display:grid; gap:12px;">
+            <div>
+              <label class="muted">Nieuw lichaamsgewicht (kg)</label>
+              <input type="number" step="0.1" id="checkin-weight" value="81.0" />
+            </div>
+            <div>
+              <label class="muted">Sportdoel</label>
+              <select id="checkin-goal">
+                <option value="lean_bulk">Spieropbouw (Lean Bulk — +250 kcal)</option>
+                <option value="cut">Vetverlies / Strakker (-350 kcal, hoog eiwit)</option>
+                <option value="recomp">Onderhoud / Recomp (0 kcal)</option>
+              </select>
+            </div>
+            <div class="photo-box">
+              <div style="font-weight:700;">📷 Wekelijkse Voortgangsfoto (Lokaal in browser)</div>
+              <p class="muted" style="margin:4px 0 8px;">Wordt alleen lokaal in je browser bewaard voor dit prototype.</p>
+              <input type="file" accept="image/*" id="photo-input" onchange="handlePhotoUpload(event)" />
+              <img id="photo-preview" class="photo-preview hidden" alt="Voortgangsfoto" />
+            </div>
+            <button class="btn btn-primary" onclick="saveCheckin()">💾 Sla check-in op & update macro's</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span>🕒 Gewichtshistorie</span></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Gewicht</th>
+                <th>Verschil</th>
+              </tr>
+            </thead>
+            <tbody id="weight-history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: DEALS, RECEPTEN & LIJST -->
+    <section id="tab-deals" class="tab-panel hidden">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>🛍️ Supermarkt Folderdeals</span>
+            <span class="pill pill-teal" id="deals-source-badge">PrijsProfeet · Week 48</span>
+          </div>
+
+          <div class="api-box">
+            <div style="font-size:0.84rem; font-weight:700;">🔌 PrijsProfeet API-koppeling (zonder verplichte key)</div>
+            <div class="api-row">
+              <input type="text" id="api-url-input" value="https://www.prijsprofeet.nl/api/v1/deals" placeholder="https://www.prijsprofeet.nl/api/v1/deals" style="flex:2; min-width:210px;" />
+              <input type="password" id="api-key-input" placeholder="Optionele gratis API-key (hogere limiet)" style="flex:1; min-width:170px;" />
+            </div>
+            <div class="api-row" style="align-items:center; justify-content:space-between;">
+              <label style="font-size:0.82rem; color:var(--muted); display:flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="include-upcoming" /> Ook aankomende deals (<code>upcoming</code>) tonen
+              </label>
+              <button class="btn btn-primary" onclick="syncPrijsProfeet()">↻ Sync PrijsProfeet</button>
+            </div>
+            <div class="muted" id="api-status-text" style="font-size:0.8rem;">
+              Filtert automatisch op <code>promotion_status: "active"</code> en relevante eiwit-/gezonde producten.
+            </div>
+          </div>
+
+          <div id="deals-list"></div>
+
+          <div class="attribution">
+            Aanbiedingen via <a href="https://www.prijsprofeet.nl" target="_blank" rel="noopener">PrijsProfeet</a> · Automatische fallback naar lokale voorraad (AH, Lidl, Jumbo, Dirk) bij CORS-beperking.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span>📝 Slimme Boodschappenlijst</span></div>
+          <div id="grocery-list"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 18px;">
+        <div class="card-title">
+          <span>🍳 Gegenereerde Recepten op Basis van Deals & Macro's</span>
+          <span class="pill pill-green" id="recipe-macro-label">Afgestemd op jouw doelen</span>
+        </div>
+        <div class="grid-3" id="recipes-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "gymmarket_prototype_v2";
+
+    const DEFAULT_STATE = {
+      goal: "lean_bulk",
+      kcalTarget: 2350,
+      proteinTarget: 175,
+      apiUrl: "https://www.prijsprofeet.nl/api/v1/deals",
+      apiKey: "",
+      includeUpcoming: false,
+      dealsSource: "Lokale fallback (Week 48)",
+      weights: [
+        { week: "Week 6", kg: 82.1 },
+        { week: "Week 7", kg: 81.8 },
+        { week: "Week 8 (Nu)", kg: 81.2 }
+      ],
+      photoDataUrl: null,
+      benchHistory: [75, 77.5, 80, 82.5],
+      exercises: [
+        { id: "bench", name: "Barbell Bench Press", weight: 82.5, step: 2.5, targetReps: 8, sets: [8, 8, 8] },
+        { id: "ohp", name: "Overhead Press", weight: 47.5, step: 2.5, targetReps: 10, sets: [10, 9, 8] },
+        { id: "dips", name: "Weighted Dips", weight: 10, step: 2.5, targetReps: 10, sets: [10, 10, 9] }
+      ],
+      deals: [
+        { id: "kip", category: "kip", store: "Albert Heijn", badge: "1+1 Gratis", title: "Kipfilet (500g)", price: 4.99, saving: 4.99, protein: 115, status: "active", selected: true },
+        { id: "kwark", category: "kwark", store: "Lidl", badge: "-30%", title: "Magere Kwark (1kg)", price: 1.69, saving: 0.75, protein: 90, status: "active", selected: true },
+        { id: "eieren", category: "eieren", store: "Jumbo", badge: "2 voor €5", title: "Vrije Uitloop Eieren (10 stuks)", price: 2.50, saving: 1.20, protein: 65, status: "active", selected: true },
+        { id: "broccoli", category: "broccoli", store: "Lidl", badge: "Weekdeal", title: "Verse Broccoli (500g)", price: 0.99, saving: 0.50, protein: 15, status: "active", selected: true },
+        { id: "rundergehakt", category: "gehakt", store: "Dirk", badge: "Dirk Knaller", title: "Mager Rundergehakt (500g)", price: 4.29, saving: 1.40, protein: 100, status: "active", selected: true },
+        { id: "huttenkase", category: "zuivel", store: "Dirk", badge: "-25%", title: "Hüttenkäse / Cottage Cheese (200g)", price: 1.19, saving: 0.40, protein: 24, status: "active", selected: false },
+        { id: "zalm", category: "vis", store: "Albert Heijn", badge: "-25%", title: "Zalmfilet (250g)", price: 5.49, saving: 1.85, protein: 52, status: "active", selected: false }
+      ]
+    };
+
+    const RECIPES = [
+      {
+        title: "Kip & Broccoli Rijstbowl",
+        requires: ["kip", "broccoli"],
+        protein: "54g eiwit",
+        kcal: "640 kcal",
+        desc: "Snelle post-workout bowl met gegrilde kipfilet, gestoomde broccoli en zilvervliesrijst."
+      },
+      {
+        title: "Romige Kwark & Eiwit-Ontbijt",
+        requires: ["kwark", "eieren"],
+        protein: "46g eiwit",
+        kcal: "510 kcal",
+        desc: "Hoge eiwitstart van de dag met magere kwark en gekookte of gebakken eieren."
+      },
+      {
+        title: "Zalm met Groene Groenten",
+        requires: ["vis", "broccoli"],
+        protein: "44g eiwit",
+        kcal: "590 kcal",
+        desc: "Omega-3 rijke maaltijd met gebakken zalmfilet en knapperige broccoli."
+      },
+      {
+        title: "Eiwitrijke Boerenomelet",
+        requires: ["eieren"],
+        protein: "34g eiwit",
+        kcal: "420 kcal",
+        desc: "Voedzame omelet met eieren en groenten, ideaal als lunch of snelle snack."
+      },
+      {
+        title: "Mager Rundergehakt & Broccoli Skillet",
+        requires: ["gehakt", "broccoli"],
+        protein: "52g eiwit",
+        kcal: "610 kcal",
+        desc: "Hartige panmaaltijd met mager rundergehakt, broccoli en kruiden — ideaal voor spieropbouw."
+      }
+    ];
+
+    const FITNESS_KEYWORDS = [
+      { key: "kip", words: ["kip", "kipfilet", "kipdij"], protein: 110 },
+      { key: "kwark", words: ["kwark", "skyr", "yoghurt", "proteine"], protein: 85 },
+      { key: "eieren", words: ["ei", "eieren"], protein: 65 },
+      { key: "broccoli", words: ["broccoli", "groente", "spinazie", "sperziebonen"], protein: 15 },
+      { key: "gehakt", words: ["gehakt", "biefstuk", "rund", "tartaar"], protein: 95 },
+      { key: "vis", words: ["zalm", "tonijn", "kabeljauw", "vis"], protein: 55 },
+      { key: "zuivel", words: ["huttenkase", "hüttenkäse", "cottage", "melk", "kaas"], protein: 30 }
+    ];
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(DEFAULT_STATE);
+        return { ...structuredClone(DEFAULT_STATE), ...JSON.parse(raw) };
+      } catch {
+        return structuredClone(DEFAULT_STATE);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 3000);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tabId));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+      document.getElementById("tab-" + tabId).classList.remove("hidden");
+      renderAll();
+    }
+
+    function classifyFitnessProduct(title) {
+      const lower = title.toLowerCase();
+      for (const item of FITNESS_KEYWORDS) {
+        if (item.words.some(w => lower.includes(w))) {
+          return { category: item.key, protein: item.protein };
+        }
+      }
+      return null;
+    }
+
+    async function syncPrijsProfeet(silent = false) {
+      const urlInput = document.getElementById("api-url-input");
+      const keyInput = document.getElementById("api-key-input");
+      const upcomingCb = document.getElementById("include-upcoming");
+      const statusEl = document.getElementById("api-status-text");
+
+      const baseUrl = (urlInput?.value || state.apiUrl || "https://www.prijsprofeet.nl/api/v1/deals").trim();
+      const apiKey = (keyInput?.value || "").trim();
+      const includeUpcoming = Boolean(upcomingCb?.checked);
+
+      state.apiUrl = baseUrl;
+      state.apiKey = apiKey;
+      state.includeUpcoming = includeUpcoming;
+      saveState();
+
+      if (statusEl) statusEl.textContent = "Bezig met ophalen van PrijsProfeet aanbiedingen...";
+
+      try {
+        const urlObj = new URL(baseUrl);
+        if (!urlObj.searchParams.has("promotion_status")) {
+          urlObj.searchParams.set("promotion_status", includeUpcoming ? "active,upcoming" : "active");
+        }
+        const headers = { "Accept": "application/json" };
+        if (apiKey) {
+          headers["Authorization"] = `Bearer ${apiKey}`;
+          headers["X-API-Key"] = apiKey;
+        }
+
+        const res = await fetch(urlObj.toString(), { headers });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const payload = await res.json();
+
+        const rawList = Array.isArray(payload)
+          ? payload
+          : (payload.data || payload.deals || payload.items || payload.results || []);
+
+        const allowedStatuses = includeUpcoming ? ["active", "upcoming"] : ["active"];
+
+        const mapped = rawList
+          .filter(item => {
+            const st = String(item.promotion_status || item.status || "active").toLowerCase();
+            return allowedStatuses.includes(st);
+          })
+          .map((item, idx) => {
+            const title = String(item.title || item.name || item.product_name || item.product || "Aanbieding");
+            const store = String(item.supermarket || item.store || item.chain || item.retailer || "Supermarkt");
+            const promoPrice = Number(item.promo_price ?? item.discount_price ?? item.price ?? 2.99) || 2.99;
+            const origPrice = Number(item.original_price ?? item.regular_price ?? item.old_price ?? (promoPrice + 1.0)) || (promoPrice + 1.0);
+            const saving = Math.max(0, Number((origPrice - promoPrice).toFixed(2)));
+            const badge = String(item.discount_label || item.promo_text || item.badge || (saving > 0 ? `-€${saving.toFixed(2).replace(".", ",")}` : "Actie"));
+            const status = String(item.promotion_status || item.status || "active").toLowerCase();
+            const fit = classifyFitnessProduct(title);
+
+            return {
+              id: String(item.id || `pp_${idx}`),
+              category: fit ? fit.category : "overig",
+              store,
+              badge: status === "upcoming" ? `Binnenkort · ${badge}` : badge,
+              title,
+              price: promoPrice,
+              saving,
+              protein: fit ? fit.protein : 20,
+              status,
+              isFitnessMatch: Boolean(fit),
+              selected: Boolean(fit) && idx < 8
+            };
+          });
+
+        // Geef fitness/eiwitrijke aanbiedingen voorrang
+        const fitnessFirst = [
+          ...mapped.filter(d => d.isFitnessMatch),
+          ...mapped.filter(d => !d.isFitnessMatch)
+        ].slice(0, 15);
+
+        if (fitnessFirst.length > 0) {
+          state.deals = fitnessFirst;
+          state.dealsSource = "PrijsProfeet Live API";
+          saveState();
+          renderAll();
+          if (statusEl) statusEl.textContent = `Verbonden met PrijsProfeet (${fitnessFirst.length} actieve deals geladen).`;
+          if (!silent) showToast(`PrijsProfeet gesynchroniseerd: ${fitnessFirst.length} deals!`);
+        } else {
+          throw new Error("Geen actieve deals gevonden in response");
+        }
+      } catch (err) {
+        state.dealsSource = "Lokale voorraad (PrijsProfeet fallback)";
+        saveState();
+        renderDealsAndRecipes();
+        if (statusEl) {
+          statusEl.textContent = `Kon endpoint niet direct in browser bereiken (${err.message}). Lokale deals (AH, Lidl, Jumbo, Dirk) zijn actief.`;
+        }
+        if (!silent) showToast("Directe API-aanroep geblokkeerd/mislukt — lokale deals actief.");
+      }
+    }
+
+    function fillTargetReps() {
+      state.exercises.forEach(ex => {
+        ex.sets = [ex.targetReps, ex.targetReps, ex.targetReps];
+      });
+      saveState();
+      renderWorkout();
+      showToast("Doel-reps ingevuld voor alle sets!");
+    }
+
+    function updateSetRep(exIdx, setIdx, val) {
+      const parsed = Math.max(0, parseInt(val || "0", 10));
+      state.exercises[exIdx].sets[setIdx] = parsed;
+      saveState();
+      renderWorkout();
+    }
+
+    function completeWorkout() {
+      let bumpedCount = 0;
+      state.exercises.forEach(ex => {
+        const hitAll = ex.sets.every(r => r >= ex.targetReps);
+        if (hitAll) {
+          ex.weight = Number((ex.weight + ex.step).toFixed(1));
+          bumpedCount++;
+          if (ex.id === "bench") {
+            state.benchHistory.push(ex.weight);
+          }
+        }
+      });
+      saveState();
+      renderAll();
+      showToast(
+        bumpedCount > 0
+          ? `Training opgeslagen! ${bumpedCount} oefening(en) verhoogd via Progressive Overload.`
+          : "Training opgeslagen! Houd huidige gewichten vast tot alle sets het doel halen."
+      );
+    }
+
+    function saveCheckin() {
+      const kg = parseFloat(document.getElementById("checkin-weight").value);
+      const goal = document.getElementById("checkin-goal").value;
+      if (isNaN(kg) || kg <= 30 || kg >= 250) {
+        showToast("Vul een geldig gewicht in (bijv. 81.0).");
+        return;
+      }
+      state.goal = goal;
+      if (goal === "lean_bulk") {
+        state.kcalTarget = Math.round(kg * 29);
+        state.proteinTarget = Math.round(kg * 2.15);
+      } else if (goal === "cut") {
+        state.kcalTarget = Math.round(kg * 23);
+        state.proteinTarget = Math.round(kg * 2.3);
+      } else {
+        state.kcalTarget = Math.round(kg * 26);
+        state.proteinTarget = Math.round(kg * 2.0);
+      }
+      const nextNum = state.weights.length + 6;
+      state.weights.push({ week: `Week ${nextNum}`, kg: Number(kg.toFixed(1)) });
+      saveState();
+      renderAll();
+      showToast(`Check-in opgeslagen: ${kg.toFixed(1)} kg · ${state.kcalTarget} kcal / ${state.proteinTarget}g eiwit.`);
+    }
+
+    function handlePhotoUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.photoDataUrl = reader.result;
+        saveState();
+        renderTransform();
+        showToast("Voortgangsfoto lokaal opgeslagen.");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function toggleDeal(id) {
+      const deal = state.deals.find(d => d.id === id);
+      if (!deal) return;
+      deal.selected = !deal.selected;
+      saveState();
+      renderAll();
+    }
+
+    function resetDemo() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = structuredClone(DEFAULT_STATE);
+      renderAll();
+      showToast("Demo-data gereset naar beginwaarden.");
+    }
+
+    function renderWorkout() {
+      const tbody = document.getElementById("workout-tbody");
+      tbody.innerHTML = state.exercises.map((ex, exIdx) => {
+        const hitAll = ex.sets.every(r => r >= ex.targetReps);
+        const nextWeight = hitAll ? (ex.weight + ex.step).toFixed(1) : ex.weight.toFixed(1);
+        return `
+          <tr>
+            <td><strong>${ex.name}</strong><br><span class="muted">Nu: ${ex.weight} kg</span></td>
+            <td>3 × ${ex.targetReps} reps</td>
+            ${[0, 1, 2].map(sIdx => `
+              <td><input type="number" min="0" max="50" value="${ex.sets[sIdx]}" onchange="updateSetRep(${exIdx}, ${sIdx}, this.value)" style="width:72px;" /></td>
+            `).join("")}
+            <td>
+              <span class="pill ${hitAll ? "pill-green" : "pill-orange"}">
+                ${hitAll ? `↗ ${nextWeight} kg` : `= ${nextWeight} kg`}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderTransform() {
+      const tbody = document.getElementById("weight-history-tbody");
+      tbody.innerHTML = state.weights.map((entry, idx) => {
+        const prev = idx > 0 ? state.weights[idx - 1].kg : entry.kg;
+        const diff = (entry.kg - prev).toFixed(1);
+        const label = idx === 0 ? "—" : (diff > 0 ? `+${diff} kg` : `${diff} kg`);
+        return `<tr><td>${entry.week}</td><td><strong>${entry.kg.toFixed(1)} kg</strong></td><td>${label}</td></tr>`;
+      }).join("");
+
+      const img = document.getElementById("photo-preview");
+      if (state.photoDataUrl) {
+        img.src = state.photoDataUrl;
+        img.classList.remove("hidden");
+      } else {
+        img.classList.add("hidden");
+      }
+    }
+
+    function renderDealsAndRecipes() {
+      const badgeEl = document.getElementById("deals-source-badge");
+      if (badgeEl) badgeEl.textContent = state.dealsSource || "PrijsProfeet · Week 48";
+
+      const urlInput = document.getElementById("api-url-input");
+      if (urlInput && !urlInput.value) urlInput.value = state.apiUrl;
+
+      const selectedDeals = state.deals.filter(d => d.selected);
+      const selectedCategories = new Set(selectedDeals.map(d => d.category || d.id));
+      const totalSaving = selectedDeals.reduce((sum, d) => sum + d.saving, 0);
+
+      document.getElementById("hdr-savings").textContent = `Geschatte weekbesparing: €${totalSaving.toFixed(2).replace(".", ",")}`;
+      document.getElementById("dash-deals-count").textContent = `${selectedDeals.length} deals`;
+
+      document.getElementById("deals-list").innerHTML = state.deals.map(d => `
+        <div class="deal-item ${d.selected ? "selected" : ""}">
+          <div>
+            <div><strong>${d.title}</strong> <span class="pill pill-teal">${d.store}</span> <span class="pill pill-orange">${d.badge}</span></div>
+            <div class="muted">€${d.price.toFixed(2).replace(".", ",")} · Besparing €${d.saving.toFixed(2).replace(".", ",")} · ~${d.protein}g eiwit/verpakking</div>
+          </div>
+          <input type="checkbox" ${d.selected ? "checked" : ""} onchange="toggleDeal('${d.id}')" style="width:20px;height:20px;cursor:pointer;" />
+        </div>
+      `).join("");
+
+      if (selectedDeals.length === 0) {
+        document.getElementById("grocery-list").innerHTML = `<p class="muted">Geen aanbiedingen geselecteerd. Vink links een deal aan.</p>`;
+      } else {
+        const byStore = {};
+        selectedDeals.forEach(d => {
+          byStore[d.store] = byStore[d.store] || [];
+          byStore[d.store].push(d);
+        });
+        document.getElementById("grocery-list").innerHTML = Object.entries(byStore).map(([store, items]) => `
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:700; color:var(--primary-dark);">${store}</div>
+            <ul style="padding-left:18px; margin-top:4px;">
+              ${items.map(i => `<li>${i.title} — <strong>€${i.price.toFixed(2).replace(".", ",")}</strong> (${i.badge})</li>`).join("")}
+            </ul>
+          </div>
+        `).join("");
+      }
+
+      const matchingRecipes = RECIPES.filter(r => r.requires.every(req => selectedCategories.has(req)));
+      const listToShow = matchingRecipes.length > 0 ? matchingRecipes : RECIPES.slice(0, 1);
+
+      document.getElementById("recipe-macro-label").textContent = `${state.kcalTarget} kcal · ${state.proteinTarget}g eiwit doel`;
+      document.getElementById("recipes-grid").innerHTML = listToShow.map(r => `
+        <div class="recipe-card">
+          <div>
+            <div style="font-weight:700; font-size:1rem;">${r.title}</div>
+            <div style="margin:6px 0;">
+              <span class="pill pill-green">${r.protein}</span>
+              <span class="pill pill-teal">${r.kcal}</span>
+            </div>
+            <p class="muted">${r.desc}</p>
+          </div>
+          <div class="muted" style="font-size:0.78rem;">Gebaseerd op geselecteerde folderdeals</div>
+        </div>
+      `).join("");
+
+      document.getElementById("dash-recipes-preview").innerHTML = `
+        <div style="font-weight:700; font-size:0.92rem; margin-bottom:6px;">Top match deze week:</div>
+        <div class="muted">${listToShow[0].title} (${listToShow[0].protein}, ${listToShow[0].kcal})</div>
+      `;
+    }
+
+    function renderChart() {
+      const svg = document.getElementById("bench-chart");
+      const data = state.benchHistory;
+      const minVal = Math.min(...data) - 3;
+      const maxVal = Math.max(...data) + 3;
+      const w = 420, h = 180, padX = 38, padY = 24;
+
+      const points = data.map((val, i) => {
+        const x = padX + (i / Math.max(1, data.length - 1)) * (w - padX * 2);
+        const y = h - padY - ((val - minVal) / (maxVal - minVal || 1)) * (h - padY * 2);
+        return { x, y, val, label: `S${i + 1}` };
+      });
+
+      const poly = points.map(p => `${p.x},${p.y}`).join(" ");
+      svg.innerHTML = `
+        <line x1="${padX}" y1="${h - padY}" x2="${w - padX}" y2="${h - padY}" stroke="#e5e7eb" stroke-width="2" />
+        <polyline fill="none" stroke="#0f766e" stroke-width="3" points="${poly}" />
+        ${points.map(p => `
+          <circle cx="${p.x}" cy="${p.y}" r="5" fill="#0f766e" />
+          <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" font-size="11" font-weight="700" fill="#111827">${p.val}kg</text>
+          <text x="${p.x}" y="${h - 6}" text-anchor="middle" font-size="11" fill="#6b7280">${p.label}</text>
+        `).join("")}
+      `;
+    }
+
+    function renderDashboard() {
+      const latest = state.weights[state.weights.length - 1];
+      const prev = state.weights.length > 1 ? state.weights[state.weights.length - 2] : latest;
+      const diff = (latest.kg - prev.kg).toFixed(1);
+
+      document.getElementById("hdr-macros").textContent = `Doel: ${state.kcalTarget.toLocaleString("nl-NL")} kcal · ${state.proteinTarget}g eiwit`;
+      document.getElementById("dash-weight").textContent = `${latest.kg.toFixed(1)} kg`;
+      document.getElementById("dash-weight-delta").textContent = `Vorige: ${prev.kg.toFixed(1)} kg (${diff > 0 ? "+" + diff : diff} kg)`;
+
+      const bench = state.exercises.find(e => e.id === "bench") || state.exercises[0];
+      document.getElementById("dash-bench").textContent = `${bench.weight.toFixed(1)} kg`;
+      document.getElementById("dash-bench-sub").textContent = `3 sets × ${bench.targetReps} reps (Progressive Overload)`;
+
+      const pct = Math.min(100, 55 + state.benchHistory.length * 4 + state.weights.length * 2);
+      document.getElementById("goal-pct-badge").textContent = `${pct}%`;
+      document.getElementById("goal-progress-bar").style.width = `${pct}%`;
+
+      renderChart();
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderWorkout();
+      renderTransform();
+      renderDealsAndRecipes();
+    }
+
+    renderAll();
+    // Probeer bij opstarten stil te synchroniseren met PrijsProfeet (met fallback bij CORS/netwerkfout)
+    syncPrijsProfeet(true);
+  </script>
+</body>
+</html>
